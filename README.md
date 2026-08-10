@@ -220,16 +220,6 @@ simple-kernel-module/
 │   ├── wifi_driver.c
 │   └── Makefile
 └── README.md
-```
-
-## Gelecek Modüller
-
-Yakında eklenecek modüller:
-- [ ] Proc Filesystem Module
-- [ ] File Operations Module
-- [ ] Interrupt Handler Module
-- [ ] Memory Management Module
-- [ ] Daha fazlası...
 
 ---
 
