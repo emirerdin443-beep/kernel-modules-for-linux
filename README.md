@@ -1,6 +1,6 @@
 # Simple Kernel Module
 
-Selamlar. Bir türk olarak bu benim yaptığım ilk repom ve ilk yazıldığım kernel modülleri. Ilerde daha fazla modül vb. ekleyeceğim. İyi kullanımlar! C++ oyun motorları da gelecek!
+Selamlar. Bir türk olarak bu benim yaptığım ilk repom ve ilk yazıldığım kernel modülleri. Ilerde daha fazla modül vb. ekleyeceğim. İyi kullanımlar.
 
 ## Proje Hakkında
 
