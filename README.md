@@ -13,9 +13,9 @@ The following kernel modules are included in this repository:
 ### 1. Hello Module
 
 - **Description:** A simple "Hello World" kernel module
-- **Directory:** `hello/`
+- **Directory:** repository root (`./`)
 - **Files:** `hello.c`, `Makefile`
-- **Functionality:** Prints load and unload messages to the kernel
+- **Functionality:** Prints load and unload messages to the kernel log
 
 ### 2. Character Device Module
 
@@ -38,6 +38,13 @@ The following kernel modules are included in this repository:
 - **Files:** `wifi_driver.c`, `Makefile`
 - **Functionality:** Creates a `wlan%d` network interface and can perform packet transmission
 
+### 5. Hardware Manager Module
+
+- **Description:** Hardware monitoring and management kernel module
+- **Directory:** `hardware-manager/`
+- **Files:** `hwmgr.c`, `Makefile`
+- **Functionality:** Exposes `/proc/hwmgr` and `/sys/kernel/hwmgr` interfaces for CPU, memory, uptime, and monitoring controls
+
 ## Requirements
 
 - Linux operating system
@@ -50,7 +57,7 @@ The following kernel modules are included in this repository:
 ```bash
 sudo apt-get update
 sudo apt-get install build-essential linux-headers-$(uname -r)
-````
+```
 
 ### For RHEL/CentOS:
 
@@ -61,24 +68,27 @@ sudo yum install kernel-devel-$(uname -r)
 
 ## General Build Instructions
 
-To build each module, navigate to the corresponding directory and run the `make` command:
+Build the Hello module from the repository root:
+
+```bash
+make
+```
+
+Build modules in subdirectories by navigating to the corresponding directory and running `make`:
 
 ```bash
 cd <module_directory>
 make
 ```
 
-This command will create the `.ko` file.
+These commands create the module's `.ko` file in the current build directory.
 
 ## Module Usage
 
 ### Hello Module
 
 ```bash
-# Navigate to the directory
-cd hello
-
-# Build
+# From the repository root
 make
 
 # Load the module
@@ -93,7 +103,7 @@ sudo rmmod hello
 
 **Expected Output:**
 
-```
+```text
 [timestamp] Hello, Kernel!
 [timestamp] Goodbye, Kernel!
 ```
@@ -140,10 +150,27 @@ make
 sudo insmod wifi_driver.ko
 
 # Check the network interface
-ifconfig -a
+ip link show
 
 # Remove the module
 sudo rmmod wifi_driver
+```
+
+### Hardware Manager Module
+
+```bash
+cd hardware-manager
+make
+sudo insmod hwmgr.ko
+
+# Check the proc interface
+cat /proc/hwmgr
+
+# Check the sysfs interface
+ls /sys/kernel/hwmgr
+
+# Remove the module
+sudo rmmod hwmgr
 ```
 
 ## Verifying the Module
@@ -161,24 +188,25 @@ lsmod | grep hello
 lsmod | grep char_device
 lsmod | grep simple_driver
 lsmod | grep wifi_driver
+lsmod | grep hwmgr
 ```
 
 ## Cleaning
 
-To remove compiled files from each module's directory:
+To remove compiled files from the current module's build directory:
 
 ```bash
-cd <module_directory>
 make clean
 ```
 
-To clean all modules:
+To clean all modules from the repository root:
 
 ```bash
-cd hello && make clean && cd ..
+make clean
 cd char_device && make clean && cd ..
 cd simple_driver && make clean && cd ..
 cd wifi_driver && make clean && cd ..
+cd hardware-manager && make clean && cd ..
 ```
 
 ## Troubleshooting
@@ -218,21 +246,23 @@ cd wifi_driver && make clean && cd ..
 
 ## Repository Structure
 
-```
+```text
 simple-kernel-module/
-├── hello/
-│   ├── hello.c
-│   └── Makefile
+├── Makefile
+├── README.md
+├── hello.c
 ├── char_device/
-│   ├── char_device.c
-│   └── Makefile
+│   ├── Makefile
+│   └── char_device.c
+├── hardware-manager/
+│   ├── Makefile
+│   └── hwmgr.c
 ├── simple_driver/
-│   ├── simple_driver.c
-│   └── Makefile
-├── wifi_driver/
-│   ├── wifi_driver.c
-│   └── Makefile
-└── README.md
+│   ├── Makefile
+│   └── simple_driver.c
+└── wifi_driver/
+    ├── Makefile
+    └── wifi_driver.c
 ```
 
 ---
@@ -241,6 +271,3 @@ simple-kernel-module/
 
 **Author:** emirerdin443-beep
 **License:** GPL
-
-```
-```
