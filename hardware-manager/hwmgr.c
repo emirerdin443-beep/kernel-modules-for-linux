@@ -1,4 +1,3 @@
-```c
 /*
  * hwmgr.c
  *
@@ -102,12 +101,7 @@ static void hwmgr_collect_memory(unsigned long *total_kb,
 	*free_kb = info.freeram * factor;
 
 #ifdef CONFIG_MMU
-	/*
-	 * available memory is not directly provided by si_meminfo().
-	 * global_node_page_state() gives us a useful approximation.
-	 */
-	*available_kb =
-		global_node_page_state(NR_FREE_PAGES) * (PAGE_SIZE / 1024);
+	*available_kb = si_mem_available() * (PAGE_SIZE / 1024);
 #else
 	*available_kb = *free_kb;
 #endif
@@ -133,6 +127,7 @@ static int hwmgr_proc_show(struct seq_file *m, void *v)
 	unsigned long free_kb;
 	unsigned long available_kb;
 	unsigned long uptime_seconds;
+	u64 module_uptime;
 	u64 now;
 
 	hwmgr_collect_memory(&total_kb, &free_kb, &available_kb);
@@ -140,6 +135,7 @@ static int hwmgr_proc_show(struct seq_file *m, void *v)
 	now = ktime_get_boottime_seconds();
 
 	uptime_seconds = (unsigned long)now;
+	module_uptime = now - module_start_time;
 
 	mutex_lock(&hwmgr_lock);
 
@@ -166,6 +162,8 @@ static int hwmgr_proc_show(struct seq_file *m, void *v)
 	seq_puts(m, "\n[SYSTEM]\n");
 	seq_printf(m, "Kernel uptime       : %lu seconds\n",
 		   uptime_seconds);
+	seq_printf(m, "Module uptime       : %llu seconds\n",
+		   module_uptime);
 
 	seq_puts(m, "\n[MONITOR]\n");
 	seq_printf(m, "Enabled             : %s\n",
@@ -523,4 +521,3 @@ MODULE_DESCRIPTION(
 	"Generic hardware monitoring and management kernel module"
 );
 MODULE_VERSION(HWMGR_VERSION);
-```

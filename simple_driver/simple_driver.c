@@ -17,10 +17,9 @@ static int simple_probe(struct platform_device *pdev) {
     return 0;
 }
 
-static int simple_remove(struct platform_device *pdev) {
+static void simple_remove(struct platform_device *pdev) {
     printk(KERN_INFO "Simple driver remove called for device: %s\n", pdev->name);
     dev_info(&pdev->dev, "Device removed successfully\n");
-    return 0;
 }
 
 static void simple_shutdown(struct platform_device *pdev) {

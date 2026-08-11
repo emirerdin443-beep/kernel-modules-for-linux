@@ -5,6 +5,7 @@
 #include <linux/cdev.h>
 #include <linux/device.h>
 #include <linux/uaccess.h>
+#include <linux/version.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("emirerdin443-beep");
@@ -19,27 +20,35 @@ static struct class* simpleClass = NULL;
 static struct device* simpleDevice = NULL;
 static char kernelBuffer[BUFFER_SIZE] = {0};
 
-static ssize_t dev_read(struct file *filep, char *buffer, size_t len, loff_t *offset) {
-    int error_count = 0;
-    int read_size = len > BUFFER_SIZE ? BUFFER_SIZE : len;
-    
-    error_count = copy_to_user(buffer, kernelBuffer, read_size);
-    
-    if (error_count == 0) {
-        printk(KERN_INFO "Sent %d characters to user\n", read_size);
-        return read_size;
-    } else {
-        printk(KERN_INFO "Failed to send %d characters to user\n", error_count);
+static ssize_t dev_read(struct file *filep, char __user *buffer, size_t len, loff_t *offset) {
+    size_t available = strnlen(kernelBuffer, BUFFER_SIZE);
+    size_t read_size;
+
+    if (*offset >= available)
+        return 0;
+
+    read_size = min_t(size_t, len, available - *offset);
+
+    if (copy_to_user(buffer, kernelBuffer + *offset, read_size))
         return -EFAULT;
-    }
+
+    *offset += read_size;
+
+    printk(KERN_INFO "Sent %zu characters to user\n", read_size);
+    return read_size;
 }
 
-static ssize_t dev_write(struct file *filep, const char *buffer, size_t len, loff_t *offset) {
-    int write_size = len > BUFFER_SIZE ? BUFFER_SIZE : len;
-    
-    copy_from_user(kernelBuffer, buffer, write_size);
-    
-    printk(KERN_INFO "Received %d characters from user\n", write_size);
+static ssize_t dev_write(struct file *filep, const char __user *buffer, size_t len, loff_t *offset) {
+    size_t write_size = min_t(size_t, len, BUFFER_SIZE - 1);
+
+    memset(kernelBuffer, 0, BUFFER_SIZE);
+
+    if (copy_from_user(kernelBuffer, buffer, write_size))
+        return -EFAULT;
+
+    kernelBuffer[write_size] = '\0';
+
+    printk(KERN_INFO "Received %zu characters from user\n", write_size);
     return write_size;
 }
 
@@ -57,7 +66,11 @@ static int __init char_device_init(void) {
         return majorNumber;
     }
     
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0)
+    simpleClass = class_create(CLASS_NAME);
+#else
     simpleClass = class_create(THIS_MODULE, CLASS_NAME);
+#endif
     if (IS_ERR(simpleClass)) {
         unregister_chrdev(majorNumber, DEVICE_NAME);
         printk(KERN_ALERT "Failed to register device class\n");
