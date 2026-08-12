@@ -1,6 +1,6 @@
 # Simple Kernel Module
 
-Hello. As a Turkish developer, this is my first repository and my first kernel modules. I will add more modules and other features in the future. Enjoy using them.
+Hello. As a Turkish developer, this is my first repository and my first modules. Enjoy using them. 
 
 ## About the Project
 
