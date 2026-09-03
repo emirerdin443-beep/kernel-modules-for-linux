@@ -270,4 +270,4 @@ simple-kernel-module/
 **Note:** These modules are intended for educational purposes. Test them thoroughly before using them in a production environment, and make sure you have a deep understanding of kernel programming!
 
 **Author:** emirerdin443-beep
-**License:** GPL
+**License:** MIT
