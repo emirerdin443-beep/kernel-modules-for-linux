@@ -1,4 +1,4 @@
-# Simple Kernel Module
+# Kernel Modules for Linux
 
 Hello. As a Turkish developer, this is my first repository and my first modules. Enjoy using them. 
 
@@ -247,7 +247,7 @@ cd hardware-manager && make clean && cd ..
 ## Repository Structure
 
 ```text
-simple-kernel-module/
+kernel-modules-for-linux/
 ├── Makefile
 ├── README.md
 ├── hello.c
